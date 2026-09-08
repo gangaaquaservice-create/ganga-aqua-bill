@@ -565,7 +565,7 @@ for q, r, desc, tot in items:
 
 
     # Return PDF
-    return bytes(pdf.output())
+        return bytes(pdf.output())
 
 
 # ============================================================
