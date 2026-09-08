@@ -560,35 +560,5 @@ st.download_button(
     file_name=f"Bill_Sr_{sr_no}.pdf",
     mime="application/pdf"
 )
-```
 
-### What you need to do in GitHub
 
-1. Open `app.py`.
-2. Tap **Edit ✏️**.
-3. **Select all existing code and delete it.**
-4. Paste the complete code above.
-5. Click **Commit changes**.
-6. Wait for Streamlit to redeploy.
-7. Download a new PDF.
-
-For your current default values:
-
-* 1L: `3 × 150 = 450`
-* 500ml: `3 × 210 = 630`
-* 200ml: `3 × 250 = 750`
-* **G.TOTAL = ₹1,830**
-
-So the PDF should say:
-
-**Amount in words: Rupees One Thousand Eight Hundred Thirty Only**
-
-**G.TOTAL: 1830/-**
-
-and below it:
-
-**SIGN : __________________**
-
-The important correction is that `amount_words` is calculated from the same `grand_total` used by the PDF, so the two cannot accidentally show different totals.
-
-After you paste it, if Streamlit shows **any error**, send me the screenshot/error text and I'll fix that exact error.
