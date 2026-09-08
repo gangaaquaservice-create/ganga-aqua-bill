@@ -6,14 +6,6 @@ st.set_page_config(
     layout="centered"
 )
 
-# 1. INITIALIZE SESSION STATE FIRST
-if "items" not in st.session_state or not isinstance(st.session_state.items, list):
-    st.session_state.items = [
-        {"qty": 3, "rate": 150, "description": "1 litr BISLERI Mineral water"},
-        {"qty": 3, "rate": 210, "description": "500ml. BISLERI Mineral water"},
-        {"qty": 3, "rate": 250, "description": "200ml BISLERI Mineral water"}
-    ]
-
 st.title("Ganga Aqua Service")
 st.subheader("Cash Memo Generator")
 
@@ -26,9 +18,18 @@ customer = st.text_input(
 )
 
 st.markdown("---")
+
+# Item Inputs Session State Initialization
+if "items" not in st.session_state:
+    st.session_state.items = [
+        {"qty": 3, "rate": 150, "description": "1 litr BISLERI Mineral water"},
+        {"qty": 3, "rate": 210, "description": "500ml. BISLERI Mineral water"},
+        {"qty": 3, "rate": 250, "description": "200ml BISLERI Mineral water"}
+    ]
+
 st.markdown("### Bill Items")
 
-# Render bill item fields
+# Render UI and safely update items in session state
 for i, item in enumerate(st.session_state.items):
     col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
 
@@ -36,7 +37,7 @@ for i, item in enumerate(st.session_state.items):
         item["qty"] = st.number_input(
             "Qty",
             min_value=0,
-            value=item["qty"],
+            value=int(item["qty"]),
             key=f"qty_{i}"
         )
 
@@ -44,14 +45,14 @@ for i, item in enumerate(st.session_state.items):
         item["rate"] = st.number_input(
             "Rate",
             min_value=0,
-            value=item["rate"],
+            value=int(item["rate"]),
             key=f"rate_{i}"
         )
 
     with col3:
         item["description"] = st.text_input(
             "Description",
-            value=item["description"],
+            value=str(item["description"]),
             key=f"description_{i}"
         )
 
@@ -66,7 +67,7 @@ if st.button("➕ Add Item"):
     )
     st.rerun()
 
-# Grand Total Calculation
+# Calculations
 grand_total = sum(
     item["qty"] * item["rate"]
     for item in st.session_state.items
@@ -122,7 +123,12 @@ def number_to_words(n):
 
     return " ".join(words)
 
-amount_words = "Rupees " + number_to_words(int(grand_total)) + " Only"
+# Convert Grand Total to Words
+amount_words = (
+    "Rupees "
+    + number_to_words(int(grand_total))
+    + " Only"
+)
 
 # ============================================================
 # FUNCTION TO GENERATE PDF
@@ -160,7 +166,7 @@ def generate_pdf():
     pdf.cell(40, 8, "TOTAL", border=1, align="C")
     pdf.ln()
 
-    # Dynamic Items
+    # Dynamic Items Logic
     pdf.set_font("Helvetica", size=10)
     items_data = [
         (
@@ -179,7 +185,7 @@ def generate_pdf():
         pdf.cell(40, 10, tot, border="R", align="C")
         pdf.ln()
 
-    # Spacer Rows
+    # Spacer Rows to fill Cash Memo grid height
     spacer_count = max(1, 8 - len(items_data))
     for _ in range(spacer_count):
         pdf.cell(25, 10, "", border="LR")
@@ -188,6 +194,7 @@ def generate_pdf():
         pdf.cell(40, 10, "", border="R")
         pdf.ln()
 
+    # Horizontal bottom border line
     pdf.cell(190, 0, "", border="T", ln=True)
 
     # Footer
