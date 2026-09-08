@@ -6,7 +6,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# Initialize session state for items FIRST
+# 1. INITIALIZE SESSION STATE FIRST
 if "items" not in st.session_state or not isinstance(st.session_state.items, list):
     st.session_state.items = [
         {"qty": 3, "rate": 150, "description": "1 litr BISLERI Mineral water"},
@@ -28,6 +28,7 @@ customer = st.text_input(
 st.markdown("---")
 st.markdown("### Bill Items")
 
+# Render bill item fields
 for i, item in enumerate(st.session_state.items):
     col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
 
@@ -65,7 +66,7 @@ if st.button("➕ Add Item"):
     )
     st.rerun()
 
-# Calculations
+# Grand Total Calculation
 grand_total = sum(
     item["qty"] * item["rate"]
     for item in st.session_state.items
@@ -121,7 +122,6 @@ def number_to_words(n):
 
     return " ".join(words)
 
-# Convert Grand Total to Words
 amount_words = "Rupees " + number_to_words(int(grand_total)) + " Only"
 
 # ============================================================
@@ -160,7 +160,7 @@ def generate_pdf():
     pdf.cell(40, 8, "TOTAL", border=1, align="C")
     pdf.ln()
 
-    # Dynamic Bill Items
+    # Dynamic Items
     pdf.set_font("Helvetica", size=10)
     items_data = [
         (
