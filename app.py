@@ -23,56 +23,60 @@ customer = st.text_input(
 
 st.markdown("---")
 
-
 # Item Inputs
-col1, col2 = st.columns(2)
+if "items" not in st.session_state:
+    st.session_state.items = [
+        {"qty": 3, "rate": 150, "description": "1 litr BISLERI Mineral water"},
+        {"qty": 3, "rate": 210, "description": "500ml. BISLERI Mineral water"},
+        {"qty": 3, "rate": 250, "description": "200ml BISLERI Mineral water"}
+    ]
 
-with col1:
-    qty1 = st.number_input(
-        "1L Bisleri Qty",
-        min_value=0,
-        value=3
+st.markdown("### Bill Items")
+
+for i, item in enumerate(st.session_state.items):
+    col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
+
+    with col1:
+        item["qty"] = st.number_input(
+            "Qty",
+            min_value=0,
+            value=item["qty"],
+            key=f"qty_{i}"
+        )
+
+    with col2:
+        item["rate"] = st.number_input(
+            "Rate",
+            min_value=0,
+            value=item["rate"],
+            key=f"rate_{i}"
+        )
+
+    with col3:
+        item["description"] = st.text_input(
+            "Description",
+            value=item["description"],
+            key=f"description_{i}"
+        )
+
+    with col4:
+        total = item["qty"] * item["rate"]
+        st.write(f"₹{total}")
+
+# Add new item button
+if st.button("➕ Add Item"):
+    st.session_state.items.append(
+        {"qty": 1, "rate": 0, "description": ""}
     )
-
-    qty2 = st.number_input(
-        "500ml Bisleri Qty",
-        min_value=0,
-        value=3
-    )
-
-    qty3 = st.number_input(
-        "200ml Bisleri Qty",
-        min_value=0,
-        value=3
-    )
-
-
-with col2:
-    rate1 = st.number_input(
-        "1L Rate (₹)",
-        min_value=0,
-        value=150
-    )
-
-    rate2 = st.number_input(
-        "500ml Rate (₹)",
-        min_value=0,
-        value=210
-    )
-
-    rate3 = st.number_input(
-        "200ml Rate (₹)",
-        min_value=0,
-        value=250
-    )
-
+    st.rerun()
 
 # Calculations
-t1 = qty1 * rate1
-t2 = qty2 * rate2
-t3 = qty3 * rate3
+grand_total = sum(
+    item["qty"] * item["rate"]
+    for item in st.session_state.items
+)
 
-grand_total = t1 + t2 + t3
+
 
 
 # ============================================================
@@ -188,25 +192,46 @@ amount_words = (
 # FUNCTION TO GENERATE PDF
 # ============================================================
 
-def generate_pdf():
+items = [
+    (
+        f"{item['qty']:02d}",
+        str(item["rate"]),
+        item["description"],
+        str(item["qty"] * item["rate"])
+    )
+    for item in st.session_state.items
+]
 
-    pdf = FPDF()
-
-    pdf.add_page()
-
-    pdf.set_font(
-        "Helvetica",
-        size=10
+for q, r, desc, tot in items:
+    pdf.cell(
+        25, 10,
+        q,
+        border="LR",
+        align="C"
     )
 
-
-    # Border
-    pdf.rect(
-        10,
-        10,
-        190,
-        260
+    pdf.cell(
+        25, 10,
+        r,
+        border="R",
+        align="C"
     )
+
+    pdf.cell(
+        100, 10,
+        f" {desc}",
+        border="R",
+        align="L"
+    )
+
+    pdf.cell(
+        40, 10,
+        tot,
+        border="R",
+        align="C"
+    )
+
+    pdf.ln()
 
 
     # ========================================================
