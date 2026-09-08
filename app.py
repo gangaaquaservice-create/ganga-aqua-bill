@@ -1,3 +1,4 @@
+```python
 import streamlit as st
 from fpdf import FPDF
 
@@ -9,9 +10,12 @@ st.set_page_config(
 st.title("Ganga Aqua Service")
 st.subheader("Cash Memo Generator")
 
+
 # Inputs Header
 sr_no = st.text_input("Sr No", "19")
+
 date = st.text_input("Date", "03/09/26")
+
 customer = st.text_input(
     "Customer Name",
     "Karmaveer Bhaurao Patil Nagari Patsanstha,Sangli"
@@ -19,18 +23,49 @@ customer = st.text_input(
 
 st.markdown("---")
 
+
 # Item Inputs
 col1, col2 = st.columns(2)
 
 with col1:
-    qty1 = st.number_input("1L Bisleri Qty", min_value=0, value=3)
-    qty2 = st.number_input("500ml Bisleri Qty", min_value=0, value=3)
-    qty3 = st.number_input("200ml Bisleri Qty", min_value=0, value=3)
+    qty1 = st.number_input(
+        "1L Bisleri Qty",
+        min_value=0,
+        value=3
+    )
+
+    qty2 = st.number_input(
+        "500ml Bisleri Qty",
+        min_value=0,
+        value=3
+    )
+
+    qty3 = st.number_input(
+        "200ml Bisleri Qty",
+        min_value=0,
+        value=3
+    )
+
 
 with col2:
-    rate1 = st.number_input("1L Rate (₹)", min_value=0, value=150)
-    rate2 = st.number_input("500ml Rate (₹)", min_value=0, value=210)
-    rate3 = st.number_input("200ml Rate (₹)", min_value=0, value=250)
+    rate1 = st.number_input(
+        "1L Rate (₹)",
+        min_value=0,
+        value=150
+    )
+
+    rate2 = st.number_input(
+        "500ml Rate (₹)",
+        min_value=0,
+        value=210
+    )
+
+    rate3 = st.number_input(
+        "200ml Rate (₹)",
+        min_value=0,
+        value=250
+    )
+
 
 # Calculations
 t1 = qty1 * rate1
@@ -39,30 +74,69 @@ t3 = qty3 * rate3
 
 grand_total = t1 + t2 + t3
 
-# Convert amount into words
+
+# ============================================================
+# AMOUNT IN WORDS
+# ============================================================
+
 def number_to_words(n):
+
     ones = [
-        "", "One", "Two", "Three", "Four", "Five",
-        "Six", "Seven", "Eight", "Nine", "Ten",
-        "Eleven", "Twelve", "Thirteen", "Fourteen",
-        "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+        "",
+        "One",
+        "Two",
+        "Three",
+        "Four",
+        "Five",
+        "Six",
+        "Seven",
+        "Eight",
+        "Nine",
+        "Ten",
+        "Eleven",
+        "Twelve",
+        "Thirteen",
+        "Fourteen",
+        "Fifteen",
+        "Sixteen",
+        "Seventeen",
+        "Eighteen",
+        "Nineteen"
     ]
 
     tens = [
-        "", "", "Twenty", "Thirty", "Forty",
-        "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+        "",
+        "",
+        "Twenty",
+        "Thirty",
+        "Forty",
+        "Fifty",
+        "Sixty",
+        "Seventy",
+        "Eighty",
+        "Ninety"
     ]
 
     def two_digits(num):
+
         if num < 20:
             return ones[num]
-        return tens[num // 10] + (" " + ones[num % 10] if num % 10 else "")
+
+        return tens[num // 10] + (
+            " " + ones[num % 10]
+            if num % 10
+            else ""
+        )
 
     def three_digits(num):
+
         if num < 100:
             return two_digits(num)
+
         return ones[num // 100] + " Hundred" + (
-            " " + two_digits(num % 100) if num % 100 else ""
+            " " + two_digits(num % 100)
+            if num % 100
+            else ""
         )
 
     if n == 0:
@@ -80,126 +154,200 @@ def number_to_words(n):
     n %= 1000
 
     if crore:
-        words.append(three_digits(crore) + " Crore")
+        words.append(
+            three_digits(crore) + " Crore"
+        )
 
     if lakh:
-        words.append(three_digits(lakh) + " Lakh")
+        words.append(
+            three_digits(lakh) + " Lakh"
+        )
 
     if thousand:
-        words.append(three_digits(thousand) + " Thousand")
+        words.append(
+            three_digits(thousand) + " Thousand"
+        )
 
     if n:
-        words.append(three_digits(n))
+        words.append(
+            three_digits(n)
+        )
 
     return " ".join(words)
 
 
-amount_words = "Rupees " + number_to_words(int(grand_total)) + " Only"
+# Convert Grand Total to Words
+amount_words = (
+    "Rupees "
+    + number_to_words(int(grand_total))
+    + " Only"
+)
 
 
-# Function to generate PDF layout
+# ============================================================
+# FUNCTION TO GENERATE PDF
+# ============================================================
+
 def generate_pdf():
+
     pdf = FPDF()
+
     pdf.add_page()
 
-    pdf.set_font("Helvetica", size=10)
+    pdf.set_font(
+        "Helvetica",
+        size=10
+    )
+
 
     # Border
-    pdf.rect(10, 10, 190, 260)
+    pdf.rect(
+        10,
+        10,
+        190,
+        260
+    )
 
-    # Business Header
-    pdf.set_font("Helvetica", style="B", size=14)
+
+    # ========================================================
+    # BUSINESS HEADER
+    # ========================================================
+
+    pdf.set_font(
+        "Helvetica",
+        style="B",
+        size=14
+    )
+
     pdf.cell(
-        190, 7,
+        190,
+        7,
         "GANGA AQUA SERVICE",
         ln=True,
         align="C"
     )
 
-    pdf.set_font("Helvetica", size=9)
+
+    pdf.set_font(
+        "Helvetica",
+        size=9
+    )
 
     pdf.cell(
-        190, 5,
+        190,
+        5,
         "'Aganda' nivas,near mangalwar bazar,",
         ln=True,
         align="C"
     )
 
     pdf.cell(
-        190, 5,
+        190,
+        5,
         "Old kupwad road,sangli 416416",
         ln=True,
         align="C"
     )
 
     pdf.cell(
-        190, 5,
+        190,
+        5,
         "Mob no.7387 255834",
         ln=True,
         align="C"
     )
 
-    pdf.set_font("Helvetica", style="BU", size=11)
+
+    pdf.set_font(
+        "Helvetica",
+        style="BU",
+        size=11
+    )
 
     pdf.cell(
-        190, 7,
+        190,
+        7,
         "CASH MEMO",
         ln=True,
         align="C"
     )
 
+
     pdf.ln(3)
 
-    # Meta Information
-    pdf.set_font("Helvetica", size=10)
+
+    # ========================================================
+    # META INFORMATION
+    # ========================================================
+
+    pdf.set_font(
+        "Helvetica",
+        size=10
+    )
 
     pdf.cell(
-        25, 6,
+        25,
+        6,
         f"Sr No {sr_no}",
         align="L"
     )
 
     pdf.cell(
-        120, 6,
+        120,
+        6,
         f"To,{customer}",
         align="L"
     )
 
     pdf.cell(
-        45, 6,
+        45,
+        6,
         f"Date: {date}",
         align="R",
         ln=True
     )
 
+
     pdf.ln(2)
 
-    # Table Header
-    pdf.set_font("Helvetica", style="B", size=10)
+
+    # ========================================================
+    # TABLE HEADER
+    # ========================================================
+
+    pdf.set_font(
+        "Helvetica",
+        style="B",
+        size=10
+    )
 
     pdf.cell(
-        25, 8,
+        25,
+        8,
         "QUANTITY",
         border=1,
         align="C"
     )
 
     pdf.cell(
-        25, 8,
+        25,
+        8,
         "RATE",
         border=1,
         align="C"
     )
 
     pdf.cell(
-        100, 8,
+        100,
+        8,
         "DESCRIPTION",
         border=1,
         align="C"
     )
 
     pdf.cell(
-        40, 8,
+        40,
+        8,
         "TOTAL",
         border=1,
         align="C"
@@ -207,54 +355,71 @@ def generate_pdf():
 
     pdf.ln()
 
-    # Items Data
-    pdf.set_font("Helvetica", size=10)
+
+    # ========================================================
+    # ITEMS
+    # ========================================================
+
+    pdf.set_font(
+        "Helvetica",
+        size=10
+    )
 
     items = [
+
         (
             f"{qty1:02d}",
             str(rate1),
             "1 litr BISLERI Mineral water",
             str(t1)
         ),
+
         (
             f"{qty2:02d}",
             str(rate2),
             "500ml. BISLERI Mineral water",
             str(t2)
         ),
+
         (
             f"{qty3:02d}",
             str(rate3),
             "200ml BISLERI Mineral water",
             str(t3)
         )
+
     ]
 
+
     for q, r, desc, tot in items:
+
         pdf.cell(
-            25, 10,
+            25,
+            10,
             q,
             border="LR",
             align="C"
         )
 
         pdf.cell(
-            25, 10,
+            25,
+            10,
             r,
             border="R",
             align="C"
         )
 
         pdf.cell(
-            100, 10,
+            100,
+            10,
             f" {desc}",
             border="R",
             align="L"
         )
 
         pdf.cell(
-            40, 10,
+            40,
+            10,
             tot,
             border="R",
             align="C"
@@ -262,87 +427,132 @@ def generate_pdf():
 
         pdf.ln()
 
-    # Spacer rows for vertical length
+
+    # ========================================================
+    # SPACER ROWS
+    # ========================================================
+
     for _ in range(8):
+
         pdf.cell(
-            25, 10,
+            25,
+            10,
             "",
             border="LR"
         )
 
         pdf.cell(
-            25, 10,
+            25,
+            10,
             "",
             border="R"
         )
 
         pdf.cell(
-            100, 10,
+            100,
+            10,
             "",
             border="R"
         )
 
         pdf.cell(
-            40, 10,
+            40,
+            10,
             "",
             border="R"
         )
 
         pdf.ln()
 
+
+    # Horizontal line
     pdf.cell(
-        190, 0,
+        190,
+        0,
         "",
         border="T",
         ln=True
     )
-# Footer Section
 
-# Amount in words
-pdf.set_font("Helvetica", size=9)
 
-pdf.cell(
-    150, 12,
-    f"Amount in words: {amount_words}",
-    border=1,
-    align="L"
-)
+    # ========================================================
+    # FOOTER
+    # ========================================================
 
-# Grand Total
-pdf.set_font("Helvetica", style="B", size=10)
+    pdf.set_font(
+        "Helvetica",
+        size=9
+    )
 
-pdf.cell(
-    40, 12,
-    f"G.TOTAL: {grand_total}/-",
-    border=1,
-    align="C",
-    ln=True
-)
 
-# Signature space below Grand Total
-pdf.ln(8)
+    # Amount in Words
+    pdf.cell(
+        150,
+        12,
+        f"Amount in words: {amount_words}",
+        border=1,
+        align="L"
+    )
 
-pdf.set_font("Helvetica", size=10)
 
-pdf.cell(
-    150, 8,
-    "",
-    border=0
-)
+    # Grand Total
+    pdf.set_font(
+        "Helvetica",
+        style="B",
+        size=10
+    )
 
-pdf.cell(
-    40, 8,
-    "SIGN : __________________",
-    border=0,
-    align="C"
-)
+    pdf.cell(
+        40,
+        12,
+        f"G.TOTAL: {grand_total}/-",
+        border=1,
+        align="C",
+        ln=True
+    )
 
-# PDF Button
+
+    # ========================================================
+    # SIGNATURE
+    # ========================================================
+
+    pdf.ln(8)
+
+    pdf.set_font(
+        "Helvetica",
+        size=10
+    )
+
+    pdf.cell(
+        150,
+        8,
+        "",
+        border=0
+    )
+
+    pdf.cell(
+        40,
+        8,
+        "SIGN : __________________",
+        border=0,
+        align="C"
+    )
+
+
+    # Return PDF
+    return bytes(pdf.output())
+
+
+# ============================================================
+# PDF BUTTON
+# ============================================================
+
 st.markdown("---")
 
 st.markdown(
     f"### **Grand Total: ₹{grand_total}**"
 )
+
 
 st.download_button(
     label="Download PDF Bill",
@@ -350,3 +560,35 @@ st.download_button(
     file_name=f"Bill_Sr_{sr_no}.pdf",
     mime="application/pdf"
 )
+```
+
+### What you need to do in GitHub
+
+1. Open `app.py`.
+2. Tap **Edit ✏️**.
+3. **Select all existing code and delete it.**
+4. Paste the complete code above.
+5. Click **Commit changes**.
+6. Wait for Streamlit to redeploy.
+7. Download a new PDF.
+
+For your current default values:
+
+* 1L: `3 × 150 = 450`
+* 500ml: `3 × 210 = 630`
+* 200ml: `3 × 250 = 750`
+* **G.TOTAL = ₹1,830**
+
+So the PDF should say:
+
+**Amount in words: Rupees One Thousand Eight Hundred Thirty Only**
+
+**G.TOTAL: 1830/-**
+
+and below it:
+
+**SIGN : __________________**
+
+The important correction is that `amount_words` is calculated from the same `grand_total` used by the PDF, so the two cannot accidentally show different totals.
+
+After you paste it, if Streamlit shows **any error**, send me the screenshot/error text and I'll fix that exact error.
