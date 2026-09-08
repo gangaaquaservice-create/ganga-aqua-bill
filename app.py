@@ -39,6 +39,63 @@ t3 = qty3 * rate3
 
 grand_total = t1 + t2 + t3
 
+# Convert amount into words
+def number_to_words(n):
+    ones = [
+        "", "One", "Two", "Three", "Four", "Five",
+        "Six", "Seven", "Eight", "Nine", "Ten",
+        "Eleven", "Twelve", "Thirteen", "Fourteen",
+        "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+    ]
+
+    tens = [
+        "", "", "Twenty", "Thirty", "Forty",
+        "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+    ]
+
+    def two_digits(num):
+        if num < 20:
+            return ones[num]
+        return tens[num // 10] + (" " + ones[num % 10] if num % 10 else "")
+
+    def three_digits(num):
+        if num < 100:
+            return two_digits(num)
+        return ones[num // 100] + " Hundred" + (
+            " " + two_digits(num % 100) if num % 100 else ""
+        )
+
+    if n == 0:
+        return "Zero"
+
+    words = []
+
+    crore = n // 10000000
+    n %= 10000000
+
+    lakh = n // 100000
+    n %= 100000
+
+    thousand = n // 1000
+    n %= 1000
+
+    if crore:
+        words.append(three_digits(crore) + " Crore")
+
+    if lakh:
+        words.append(three_digits(lakh) + " Lakh")
+
+    if thousand:
+        words.append(three_digits(thousand) + " Thousand")
+
+    if n:
+        words.append(three_digits(n))
+
+    return " ".join(words)
+
+
+amount_words = "Rupees " + number_to_words(int(grand_total)) + " Only"
+
 
 # Function to generate PDF layout
 def generate_pdf():
@@ -239,37 +296,46 @@ def generate_pdf():
         border="T",
         ln=True
     )
+# Footer Section
 
-    # Footer Section
-    pdf.cell(
-        115, 12,
-        "Amount in words: Total calculated amount",
-        border=1,
-        align="L"
-    )
+# Amount in words
+pdf.set_font("Helvetica", size=9)
 
-    pdf.cell(
-        35, 12,
-        "G.TOTAL:\nSIGN :",
-        border=1,
-        align="L"
-    )
+pdf.cell(
+    150, 12,
+    f"Amount in words: {amount_words}",
+    border=1,
+    align="L"
+)
 
-    pdf.set_font(
-        "Helvetica",
-        style="B",
-        size=11
-    )
+# Grand Total
+pdf.set_font("Helvetica", style="B", size=10)
 
-    pdf.cell(
-        40, 12,
-        f"{grand_total}/-",
-        border=1,
-        align="C"
-    )
+pdf.cell(
+    40, 12,
+    f"G.TOTAL: {grand_total}/-",
+    border=1,
+    align="C",
+    ln=True
+)
 
-    return bytes(pdf.output())
+# Signature space below Grand Total
+pdf.ln(8)
 
+pdf.set_font("Helvetica", size=10)
+
+pdf.cell(
+    150, 8,
+    "",
+    border=0
+)
+
+pdf.cell(
+    40, 8,
+    "SIGN : __________________",
+    border=0,
+    align="C"
+)
 
 # PDF Button
 st.markdown("---")
